@@ -1,0 +1,18 @@
+{
+  "name": "synacor-challenge",
+  "version": "0.1.0",
+  "description": "Solutions for Synacor challenge",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "solutions",
+    "nodejs"
+  ],
+  "author": "chinesedfan",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^3.10.1"
+  }
+}
