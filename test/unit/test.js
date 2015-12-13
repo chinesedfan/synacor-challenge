@@ -132,4 +132,14 @@ describe('cpu methods', function() {
 		cpu.run();
 		assert.deepEqual(cpu.register, [3, 2, 1, 0, 3, 32766, 0, 0]);
 	});
+	it('overflow add', function() {
+		var ops = [
+			{code: 9, argv: [32768, 123, 32768]},
+			{code: 0, argv: []}
+		];
+
+		var cpu = new CPU(ops, true);
+		cpu.run();
+		assert.deepEqual(cpu.register[0], 123);
+	});
 });
