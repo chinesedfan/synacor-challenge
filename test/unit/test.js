@@ -117,4 +117,19 @@ describe('cpu methods', function() {
 		assert.deepEqual(cpu.register[4], 0);
 		assert.deepEqual(cpu.register[5], 1);
 	});
+	it('simple add/mult/mod/and/or/not', function() {
+		var ops = [
+			{code: 9, argv: [32768, 1, 2]},
+			{code: 10, argv: [32769, 1, 2]},
+			{code: 11, argv: [32770, 1, 2]},
+			{code: 12, argv: [32771, 1, 2]},
+			{code: 13, argv: [32772, 1, 2]},
+			{code: 14, argv: [32773, 1]},
+			{code: 0, argv: []}
+		];
+
+		var cpu = new CPU(ops, true);
+		cpu.run();
+		assert.deepEqual(cpu.register, [3, 2, 1, 0, 3, 32766, 0, 0]);
+	});
 });
