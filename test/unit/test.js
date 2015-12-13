@@ -142,4 +142,16 @@ describe('cpu methods', function() {
 		cpu.run();
 		assert.deepEqual(cpu.register[0], 123);
 	});
+	it('wmem/rmem', function() {
+		var ops = [
+			{code: 16, argv: [0, 1234]},
+			{code: 15, argv: [1, 0]},
+			{code: 0, argv: []}
+		];
+
+		var cpu = new CPU(ops, true);
+		cpu.run();
+		assert.deepEqual(cpu.memory[0], 1234);
+		assert.deepEqual(cpu.memory[1], 1234);
+	});
 });
