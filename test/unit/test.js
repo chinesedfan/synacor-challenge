@@ -29,4 +29,60 @@ describe('cpu methods', function() {
 		cpu.run();
 		assert.deepEqual(cpu.output, ['a']);
 	});
+	it('set', function() {
+		var ops = [
+			{code: 1, argv: [0, 1234]},
+			{code: 0, argv: []}
+		];
+
+		var cpu = new CPU(ops, true);
+		cpu.run();
+		assert.deepEqual(cpu.register[0], 1234);
+	});
+	it('push number', function() {
+		var ops = [
+			{code: 2, argv: [1234]},
+			{code: 0, argv: []}
+		];
+
+		var cpu = new CPU(ops, true);
+		cpu.run();
+		assert.deepEqual(cpu.stack, [1234]);
+	});
+	it('push reg', function() {
+		var ops = [
+			{code: 2, argv: [1234]},
+			{code: 1, argv: [0, 5678]},
+			{code: 2, argv: [32768]},
+			{code: 0, argv: []}
+		];
+
+		var cpu = new CPU(ops, true);
+		cpu.run();
+		assert.deepEqual(cpu.stack, [1234, 5678]);
+	});
+	it('pop to memory', function() {
+		var ops = [
+			{code: 2, argv: [1234]},
+			{code: 3, argv: [0]},
+			{code: 0, argv: []}
+		];
+
+		var cpu = new CPU(ops, true);
+		cpu.run();
+		assert.deepEqual(cpu.stack, []);
+		assert.deepEqual(cpu.memory[0], 1234);
+	});
+	it('pop to reg', function() {
+		var ops = [
+			{code: 2, argv: [1234]},
+			{code: 3, argv: [32768]},
+			{code: 0, argv: []}
+		];
+
+		var cpu = new CPU(ops, true);
+		cpu.run();
+		assert.deepEqual(cpu.stack, []);
+		assert.deepEqual(cpu.register[0], 1234);
+	});
 });
