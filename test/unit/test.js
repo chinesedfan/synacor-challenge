@@ -85,4 +85,36 @@ describe('cpu methods', function() {
 		assert.deepEqual(cpu.stack, []);
 		assert.deepEqual(cpu.register[0], 1234);
 	});
+	it('eq', function() {
+		var ops = [
+			{code: 1, argv: [0, 1234]},
+			{code: 1, argv: [1, 1234]},
+			{code: 1, argv: [2, 5678]},
+			{code: 4, argv: [32771, 32768, 32769]},
+			{code: 4, argv: [32772, 32768, 32770]},
+			{code: 0, argv: []}
+		];
+
+		var cpu = new CPU(ops, true);
+		cpu.run();
+		assert.deepEqual(cpu.register[3], 1);
+		assert.deepEqual(cpu.register[4], 0);
+	});
+	it('gt', function() {
+		var ops = [
+			{code: 1, argv: [0, 1234]},
+			{code: 1, argv: [1, 1234]},
+			{code: 1, argv: [2, 5678]},
+			{code: 5, argv: [32771, 32768, 32769]},
+			{code: 5, argv: [32772, 32768, 32770]},
+			{code: 5, argv: [32773, 2, 1]},
+			{code: 0, argv: []}
+		];
+
+		var cpu = new CPU(ops, true);
+		cpu.run();
+		assert.deepEqual(cpu.register[3], 0);
+		assert.deepEqual(cpu.register[4], 0);
+		assert.deepEqual(cpu.register[5], 1);
+	});
 });
