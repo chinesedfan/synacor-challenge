@@ -1,9 +1,9 @@
 var assert = require('assert');
 var path = require('path');
 
-var rootpath = '../../lib/s1';
-var utils = require(path.join(rootpath, './utils'));
-var CPU = require(path.join(rootpath, './cpu')).CPU;
+var rootpath = '../../';
+var utils = require(path.join(rootpath, './lib/utils'));
+var CPU = require(path.join(rootpath, './lib/cpu')).CPU;
 
 describe('util methods', function() {
 	it('numbers2ops', function() {

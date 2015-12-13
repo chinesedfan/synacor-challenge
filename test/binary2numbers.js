@@ -1,5 +1,5 @@
 var fs = require('fs');
-var utils = require('../lib/s1/utils');
+var utils = require('../lib/utils');
 
 fs.readFile('../bin/challenge.bin', function(err, content) {
 	if (err) throw err;
