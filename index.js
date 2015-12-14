@@ -12,5 +12,5 @@ if (args.length < 1) {
 fs.readFile(args[0], function(err, content) {
 	if (err) throw err;
 
-	solve(content.toString());
+	solve(content);
 });
