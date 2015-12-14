@@ -31,7 +31,7 @@ describe('cpu methods', function() {
 	});
 	it('set', function() {
 		var ops = [
-			{code: 1, argv: [0, 1234]},
+			{code: 1, argv: [32768, 1234]},
 			{code: 0, argv: []}
 		];
 
@@ -52,7 +52,7 @@ describe('cpu methods', function() {
 	it('push reg', function() {
 		var ops = [
 			{code: 2, argv: [1234]},
-			{code: 1, argv: [0, 5678]},
+			{code: 1, argv: [32768, 5678]},
 			{code: 2, argv: [32768]},
 			{code: 0, argv: []}
 		];
@@ -87,9 +87,9 @@ describe('cpu methods', function() {
 	});
 	it('eq', function() {
 		var ops = [
-			{code: 1, argv: [0, 1234]},
-			{code: 1, argv: [1, 1234]},
-			{code: 1, argv: [2, 5678]},
+			{code: 1, argv: [32768, 1234]},
+			{code: 1, argv: [32769, 1234]},
+			{code: 1, argv: [32770, 5678]},
 			{code: 4, argv: [32771, 32768, 32769]},
 			{code: 4, argv: [32772, 32768, 32770]},
 			{code: 0, argv: []}
