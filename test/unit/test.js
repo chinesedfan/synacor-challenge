@@ -142,16 +142,44 @@ describe('cpu methods', function() {
 		cpu.run();
 		assert.deepEqual(cpu.register[0], 123);
 	});
-	it('wmem/rmem', function() {
-		var numbers = [
-			16, 0, 1234,
-			15, 1, 0,
-			0
-		];
+	describe('wmem/rmem', function() {
+		it('rmem r0, [843];', function() {
+			var numbers = [
+				15, 32768, 843,
+				0
+			];
 
-		var cpu = new CPU(numbers, {async: true});
-		cpu.run();
-		assert.deepEqual(cpu.memory[0], 1234);
-		assert.deepEqual(cpu.memory[1], 1234);
+			var cpu = new CPU(numbers, {async: true});
+			cpu.memory[843] = 20000;
+			cpu.run();
+			assert.deepEqual(cpu.register[0], 20000);
+		});
+		it('add r2, 843, 1; rmem r0, [r2];', function() {
+			var numbers = [
+				9, 32770, 843, 1,
+				15, 32768, 32770,
+				0
+			];
+
+			var cpu = new CPU(numbers, {async: true});
+			cpu.memory[844] = 10000;
+			cpu.run();
+			assert.deepEqual(cpu.register[2], 844);
+			assert.deepEqual(cpu.register[0], 10000);
+		});
+		it('set r0, 843; wmem [r0], 30000; rmem r2, [r0];', function() {
+			var numbers = [
+				1, 32768, 843,
+				16, 32768, 30000,
+				15, 32770, 32768,
+				0
+			];
+
+			var cpu = new CPU(numbers, {async: true});
+			cpu.run();
+			assert.deepEqual(cpu.register[0], 843);
+			assert.deepEqual(cpu.register[2], 30000);
+			assert.deepEqual(cpu.memory[843], 30000);
+		});
 	});
 });
