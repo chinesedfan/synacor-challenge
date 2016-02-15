@@ -19,6 +19,8 @@ fs.readFile(bin, function(err, content) {
             args[1] = '[' + args[1] + ']';
         } else if (op.code == 16) {
             args[0] = '[' + args[0] + ']';
+        } else if (op.code == 19) {
+            args[0] = String.fromCharCode(args[0]);
         }
         instr = getOpName(op.code) + ' ' + args.join(', ');
         content.push(index + ':\t' + instr);
