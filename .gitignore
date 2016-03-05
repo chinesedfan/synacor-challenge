@@ -1,2 +1,4 @@
+bin/instructions.txt
 node_modules
+tmp
 .idea
