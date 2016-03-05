@@ -22,5 +22,5 @@ Codes collected(3/8):
 
 ### Tips
 
-- If you need readable instructions to analyse the challenge program, `/tools/exportinstr.js` will output the result to `/bin/instructions.txt`.
+- If you need readable instructions to analyse the challenge program, `/tools/exportinstr.js` will output the result to `/bin/instructions.txt`. I also provide a [partial commented](docs/instrs_with_simple_comments.txt) version.
 - Test cases are very important to guarantee the CPU has been implemented as expected. Otherwise, you will fail on the self-test.

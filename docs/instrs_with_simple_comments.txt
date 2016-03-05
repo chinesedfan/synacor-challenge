@@ -1,0 +1,267 @@
+2:    out 'Welcome to...'
+320:    jmp 347
+322:    out 'jmp fails'
+342:    halt
+352:    jmp 358
+354:    jmp 368 // -2
+356:    jmp 397 // -1
+358:    jmp 484
+360:    jmp 424 // +1
+362:    jmp 453 // +2
+368:    out 'jmp lands -2'
+394:    halt
+397:    out 'jmp lands -l'
+423:    halt
+426:    out 'jmp lands +1'
+452:    halt
+457:    out 'jmp lands +2'
+483:    halt
+
+484:    jt 0, 1074
+487:    jf 1, 1074
+490:    jt 1, 495 // must jt
+493:    jmp 1074
+495:    jf 0, 500 // must jf
+498:    jmp 1074
+500:    jt r0, 1093 // all regiters should be zero
+503:    jt r1, 1093
+506:    jt r2, 1093
+509:    jt r3, 1093
+512:    jt r4, 1093
+515:    jt r5, 1093
+518:    jt r6, 1093
+521:    jt r7, 1093
+524:    set r0, 1
+527:    jf r0, 1118
+530:    set r0, 0
+533:    jt r0, 1118
+536:    add r0, 1, 1 // r0 = 2
+540:    jt r0, 564 // must jt
+543:    out 'no add op'
+563:    halt
+564:    eq r1, r0, 2 // r1 = 1
+568:    jt r1, 590 // must jt
+571:    out 'no eq op'
+589:    halt
+
+// swap, r0 = 1, r1 = 2
+590:    push r0
+592:    push r1
+594:    pop r0
+596:    pop r1
+
+598:    eq r2, r1, 2 // check r1 = 2
+602:    jf r2, 1158
+605:    eq r2, r0, 1 // check r0 = 1
+609:    jf r2, 1158
+612:    gt r2, r1, r0 // check r1 > r0 
+616:    jf r2, 1139
+619:    gt r2, r0, r1 // check !(r0 > r1)
+623:    jt r2, 1139
+626:    gt r2, 42, 42 // check !(42 > 42)
+630:    jt r2, 1139
+633:    and r0, 28912, 19626 // check and
+637:    eq r1, r0, 16544
+641:    jf r1, 1177
+644:    or r1, 28912, 19626 // check or
+648:    eq r0, r1, 31994
+652:    jt r0, 684 // must jt
+655:    out 'no bitwise or'
+683:    halt
+684:    not r0, 0 // check not
+687:    eq r1, r0, 32767
+691:    jf r1, 1208
+694:    not r0, 21845
+697:    eq r1, r0, 10922
+701:    jf r1, 1208
+704:    call 1285
+706:    jmp 1289
+
+708:    pop r0
+710:    eq r1, r0, 708 // check the stack top after call
+714:    jt r1, 1289
+717:    eq r1, r0, 706
+721:    jf r1, 1289
+724:    set r0, 1287
+727:    call r0 // call 1287
+729:    jmp 1289
+
+731:    pop r0
+733:    eq r1, r0, 731 // check the stack top after call
+737:    jt r1, 1289
+740:    eq r1, r0, 729
+744:    jf r1, 1289
+747:    add r0, 32767, 32767 // check add
+751:    eq r1, r0, 32766
+755:    jf r1, 1312
+758:    eq r1, 32766, r0
+762:    jf r1, 1312
+765:    add r0, 16384, 16384
+769:    jt r0, 1312
+772:    add r0, 16384, 16384
+776:    jt r0, 1312
+779:    mult r0, 6, 9 // check mult
+783:    eq r1, r0, 42
+787:    jt r1, 1381
+790:    eq r1, r0, 54
+794:    jf r1, 1414
+797:    mult r0, 12345, 32123
+801:    eq r1, r0, 99
+805:    jf r1, 1312
+808:    mod r0, 6, 3 // check mod
+812:    eq r1, r0, 0
+816:    jf r1, 1437
+819:    mod r0, 70, 6
+823:    eq r1, r0, 4
+827:    jf r1, 1437
+830:    mult r0, 32766, 15 // check mult
+834:    eq r1, r0, 32738
+838:    jf r1, 1312
+841:    jmp 845
+
+843:    20000 
+844:    10000 
+
+845:    rmem r0, [843] // check rmem, r0 = 20000
+848:    eq r1, r0, 20000
+852:    jf r1, 1239
+855:    add r2, 843, 1 // r2 = 844
+859:    rmem r0, [r2] // r0 = 10000
+862:    eq r1, r0, 10000
+866:    jf r1, 1239
+869:    set r0, 843 // r0 = 843
+872:    wmem [r0], 30000 // wmem [843] = 30000
+875:    rmem r2, [r0]
+878:    eq r1, r2, 30000
+882:    jf r1, 1262 // r1 = 1
+885:    call 1723 // loop mem 6068 to 30050(the end)
+
+887:    rmem r0, [6068]
+890:    eq r1, r0, 11
+894:    jf r1, 1239 // [6068] = 11
+897:    add r2, 6068, 1
+901:    rmem r0, [r2]
+904:    eq r1, r0, 116 // [6069] = 116
+908:    jf r1, 1239
+911:    wmem [r2], 84
+914:    rmem r0, [r2] // r0 = 84
+917:    eq r1, r0, 116
+921:    jt r1, 1262
+924:    eq r1, r0, 84
+928:    jf r1, 1262
+931:    wmem [937], 21
+934:    wmem [938], 7
+
+// changed by previous 2 instructions
+937:    jmp 941
+939:    19 978
+// becomes
+937:    noop
+938:    jt 19 978
+
+941:    out 'wmem opwrite fail'
+977:    halt
+978:    add r1, 10, 6080
+982:    add r1, r1, 1 // r1 = 6091
+986:    rmem r2, [6116] // r2 = 8 (?)
+989:    add r2, r2, 6116 // r2 = 6224
+993:    set r0, 6116
+996:    add r0, r0, 1 // r0 = 6117
+1000:   gt r3, r0, r2
+1004:   jt r3, 1023 // (?)
+
+1007:   rmem r4, [r0]
+1010:   wmem [r1], r4
+1013:   add r0, r0, 1
+1017:   add r1, r1, 1
+1021:   jmp 1000
+
+1023:   rmem r0, [6080]
+1026:   rmem r1, [6099]
+1029:   add r0, r0, r1
+1033:   add r0, r0, 1
+1037:   wmem [6080], r0
+1040:   wmem [6099], 44
+1043:   set r0, 6080
+1046:   call 1518
+
+1048:   push r0
+1050:   push r1
+1052:   push r2
+1054:   set r0, 26851
+1057:   set r1, 1531
+1060:   add r2, 2493, 7618
+1064:   call 1458
+
+1066:   pop r2
+1068:   pop r1
+1070:   pop r0
+1072:   jmp 2734
+
+1074:    out 'no jt/jf'
+1092:    halt
+1093:    out 'nonzero reg'
+1117:    halt
+
+1285:   jmp 708
+1287:   jmp 731
+
+1458:   push r0
+1460:   push r3
+1462:   push r4
+1464:   push r5
+1466:   push r6
+1468:   set r6, r0 // r6 = r0 = 6080
+1471:   set r5, r1 // r5 = r1 = 1528
+1474:   rmem r4, [r0] // r4 = [6080] = 11
+1477:   set r1, 0
+1480:   add r3, 1, r1 // loop start
+1484:   gt r0, r3, r4
+1488:   jt r0, 1507 // break
+1491:   add r3, r3, r6 // r3 = i + 6080
+1495:   rmem r0, [r3]
+1498:   call r5 // call 1528
+1500:   add r1, r1, 1
+1504:   jt r1, 1480 // loop end
+1507:   pop r6
+1509:   pop r5
+1511:   pop r4
+1513:   pop r3
+1515:   pop r0
+1517:   ret 
+
+1518:   push r1
+1520:   set r1, 1528
+1523:   call 1458
+1525:   pop r1
+1527:   ret 
+
+1723:   push r0
+1725:   push r1
+1727:   set r1, 6068 // r1 = 6068
+1730:   rmem r0, [r1]
+1733:   push r1
+1735:   mult r1, r1, r1 // r1 = r1 * r1
+1739:   call 2125 // r0 = f([i], i * i)
+1741:   set r1, 16724
+1744:   call 2125 // f(r0, 16724 * 16724)
+1746:   pop r1
+1748:   wmem [r1], r0 // save the result back
+1751:   add r1, r1, 1
+1755:   eq r0, 30050, r1
+1759:   jf r0, 1730 // loop
+1762:   pop r1
+1764:   pop r0
+1766:   ret
+
+// r0 = mem[i], r1 = i * i (i = 6068 to 30050)
+// r0 = (r0 | r1) & ~(r0 & r1)
+2125:   push r1
+2127:   push r2
+2129:   and r2, r0, r1 // r2 = r0 & r1
+2133:   not r2, r2 // r2 = ~r2
+2136:   or r0, r0, r1 // r0 = r0 | r1
+2140:   and r0, r0, r2 // r0 = r0 & r2
+2144:   pop r2
+2146:   pop r1
+2148:   ret 
