@@ -1,9 +1,16 @@
 var spawn = require('child_process').spawn;
 var _ = require('lodash');
 
+/**
+ * Debug options:
+ * - line, output the line type, like `title`/`message` and so on
+ * - node, output the state and the choice
+ * - origin, the origin message
+ */
 var debug = require('debug');
 var lineDebug = debug('line');
 var nodeDebug = debug('node');
+var originDebug = debug('origin');
 
 var app = spawn('node', ['../index.js', '../bin/challenge.bin'], {
     cwd: __dirname
@@ -52,6 +59,7 @@ app.stderr.on('data', function(data) {
 function dispatchLine(line) {
     var matches;
 
+    originDebug(line);
     if (isMessage) {
         lineDebug('message');
         isMessage = false;
@@ -88,6 +96,7 @@ function dispatchLine(line) {
         curNode.isDone = true;
         if (curNode.choice < curNode.exits.length) {
             nodeDebug('choice: ' + (curNode.choice + 1) + '/' + curNode.exits.length);
+            originDebug('> ' + curNode.exits[curNode.choice]);
             app.stdin.write(curNode.exits[curNode.choice] + '\n');
         } else {
             throw new Error('the choice exceeds exits length:\n' + JSON.stringify(curNode, null, 4));
