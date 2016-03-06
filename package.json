@@ -16,6 +16,7 @@
     "lodash": "^3.10.1"
   },
   "devDependencies": {
+    "debug": "^2.2.0",
     "mocha": "^2.4.5"
   }
 }
