@@ -12,38 +12,12 @@ var lineDebug = debug('line');
 var nodeDebug = debug('node');
 var originDebug = debug('origin');
 
-var app = spawn('node', ['../index.js', '../bin/challenge.bin'], {
-    cwd: __dirname
-});
-var bufferList = [];
-
 var rTitle = /^== (.+) ==$/;
 var rExitTitle = /^There are (\d+) exits:|There is (1) exit:$/;
 var rExitItem = /^- (.+)$/;
 var rInput = /^What do you do\?$/;
 var isMessage = false; // the next line is message
 var isExitList = false; // the exit list begins
-var nodeMap = {};
-var nodeCount = 0;
-var curNode;
-
-app.stdout.on('data', function(data) {
-    var start = 0;
-    _.each(data, function(byte, i) {
-        if (byte == 10) {
-            bufferList.push(data.slice(start, i));
-            dispatchLine(Buffer.concat(bufferList).toString());
-
-            bufferList = [];
-            start = i + 1;
-        } if (i == data.length - 1) {
-            bufferList.push(data.slice(start));
-        }
-    });
-});
-app.stderr.on('data', function(data) {
-    console.log(data);
-});
 
 /**
  * For each node, it stands for a status of the game.
@@ -55,8 +29,40 @@ app.stderr.on('data', function(data) {
  * - isDone, whether all information has been collected
  * - choice, which choice should be selected, default is 0
  */
+var nodeMap = {};
+var pathMap = {};
+var nodeCount = 0;
+var curNode;
 
-function dispatchLine(line) {
+startGame();
+
+function startGame() {
+    var bufferList = [];
+    var app = spawn('node', ['../index.js', '../bin/challenge.bin'], {
+        cwd: __dirname
+    });
+
+    app.stdout.on('data', function(data) {
+        var start = 0;
+        _.each(data, function(byte, i) {
+            if (byte == 10) {
+                bufferList.push(data.slice(start, i));
+                dispatchLine(app, Buffer.concat(bufferList).toString());
+
+                bufferList = [];
+                start = i + 1;
+            } if (i == data.length - 1) {
+                bufferList.push(data.slice(start));
+            }
+        });
+    });
+    app.stderr.on('data', function(data) {
+        console.log(data);
+        app.kill();
+    });
+}
+
+function dispatchLine(app, line) {
     var matches;
 
     originDebug(line);
