@@ -62,8 +62,11 @@ function startGame() {
     var app = spawn('node', ['../index.js', '../bin/challenge.bin'], {
         cwd: __dirname
     });
+    var timer;
 
     app.stdout.on('data', function(data) {
+        clearTimeout(timer);
+
         var start = 0;
         _.each(data, function(byte, i) {
             if (byte == 10) {
@@ -76,6 +79,10 @@ function startGame() {
                 bufferList.push(data.slice(start));
             }
         });
+
+        timer = setTimeout(function() {
+            throw new GameError(app, 'abort', 'you may died');
+        }, 2000);
     });
 }
 
