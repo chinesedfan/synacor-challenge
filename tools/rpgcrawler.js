@@ -45,8 +45,9 @@ var curInputPos = 0;
 
 startGame();
 process.on('uncaughtException', function(err) {
-    pathDebug(err.message);
+    pathDebug('%s: %s', err.type, err.message);
     err.app.kill();
+    if (err.type === 'error') return;
 
     if (inputList.length) {
         curNode = null;
@@ -96,8 +97,12 @@ function dispatchLine(app, line) {
         nodeDebug('at: ' + curNode.id);
 
         if (!prevNode) return;
-        pathDebug('%d[%d] = %d', prevNode.id, prevNode.exitIndex, curNode.id);
-        prevNode.tos[prevNode.exitIndex] = curNode.id;
+        if (_.isUndefined(prevNode.tos[prevNode.exitIndex])) {
+            pathDebug('found: %d[%d] = %d', prevNode.id, prevNode.exitIndex, curNode.id);
+            prevNode.tos[prevNode.exitIndex] = curNode.id;
+        } else if (prevNode.tos[prevNode.exitIndex] != curNode.id) {
+            throw new GameError(app, 'error', 'path conflict');
+        }
     } else if (matches = rTitle.exec(line)) {
         lineDebug('title');
         isMessage = true;
@@ -144,7 +149,7 @@ function dispatchLine(app, line) {
                 }
             });
             if (!hasFound) {
-                throw new GameError(app, 'abort, no un-selected exit exists');
+                throw new GameError(app, 'abort', 'no un-selected exit exists');
             }
         }
         curInputPos++;
@@ -156,7 +161,8 @@ function dispatchLine(app, line) {
     }
 }
 
-function GameError(app, msg) {
+function GameError(app, type, msg) {
     this.app = app;
+    this.type = type;
     this.message = msg;
 }
