@@ -125,9 +125,6 @@ function dispatchLine(app, line) {
 
         if (curInput && curInput.length && curInputPos < curInput.length) {
             curNode.exitIndex = curInput[curInputPos];
-            if (!_.isUndefined(curNode.tos[curNode.exitIndex])) {
-                throw new GameError(app, 'abort, the path has been selected');
-            }
         } else {
             var hasFound = false;
             _.each(curNode.exits, function(val, i) {
