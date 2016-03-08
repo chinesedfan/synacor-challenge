@@ -96,7 +96,7 @@ function dispatchLine(app, line) {
         nodeDebug('at: ' + curNode.id);
 
         if (!prevNode) return;
-        pathDebug(prevNode.id + '[' + prevNode.exitIndex + '] = ' + curNode.id);
+        pathDebug('%d[%d] = %d', prevNode.id, prevNode.exitIndex, curNode.id);
         prevNode.tos[prevNode.exitIndex] = curNode.id;
     } else if (matches = rTitle.exec(line)) {
         lineDebug('title');
@@ -148,7 +148,7 @@ function dispatchLine(app, line) {
             }
         }
         curInputPos++;
-        nodeDebug('choice: ' + (curNode.exitIndex + 1) + '/' + curNode.exits.length);
+        nodeDebug('choice: %d/%d', (curNode.exitIndex + 1), curNode.exits.length);
 
         var choice = curNode.exits[curNode.exitIndex];
         originDebug('> ' + choice);
