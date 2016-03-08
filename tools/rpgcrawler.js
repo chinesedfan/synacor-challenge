@@ -10,6 +10,7 @@ var _ = require('lodash');
 var debug = require('debug');
 var lineDebug = debug('line');
 var nodeDebug = debug('node');
+var pathDebug = debug('path');
 var originDebug = debug('origin');
 
 var rTitle = /^== (.+) ==$/;
@@ -27,14 +28,32 @@ var isExitList = false; // the exit list begins
  *
  * - id, the unique id, starts from 0
  * - isDone, whether all information has been collected
- * - choice, which choice should be selected, default is 0
+ * - tos, the array of node id corresponding to `exits`
+ * - exitIndex, which choice has just been selected, default is 0
  */
 var nodeMap = {};
-var pathMap = {};
 var nodeCount = 0;
 var curNode;
+var prevNode;
+
+/**
+ * For each input, it is a list of `exit index`
+ */
+var inputList = [];
+var curInput;
+var curInputPos = 0;
 
 startGame();
+process.on('uncaughtException', function(err) {
+    pathDebug(err.message);
+    err.app.kill();
+
+    if (inputList.length) {
+        curInput = inputList.shift();
+        curInputPos = 0;
+        startGame();
+    }
+});
 
 function startGame() {
     var bufferList = [];
@@ -56,10 +75,6 @@ function startGame() {
             }
         });
     });
-    app.stderr.on('data', function(data) {
-        console.log(data);
-        app.kill();
-    });
 }
 
 function dispatchLine(app, line) {
@@ -78,13 +93,19 @@ function dispatchLine(app, line) {
             curNode.message = line;
         }
         nodeDebug('at: ' + curNode.id);
+
+        if (!prevNode) return;
+        pathDebug(prevNode.id + '[' + prevNode.exitIndex + '] = ' + curNode.id);
+        prevNode.tos[prevNode.exitIndex] = curNode.id;
     } else if (matches = rTitle.exec(line)) {
         lineDebug('title');
         isMessage = true;
 
+        prevNode = curNode;
         curNode = {};
         curNode.title = matches[1];
         curNode.isDone = false;
+        curNode.tos = [];
         curNode.choice = 0;
     } else if (matches = rExitTitle.exec(line)) {
         lineDebug('exit title');
@@ -100,13 +121,43 @@ function dispatchLine(app, line) {
         lineDebug('input');
         isExitList = false;
         curNode.isDone = true;
-        if (curNode.choice < curNode.exits.length) {
-            nodeDebug('choice: ' + (curNode.choice + 1) + '/' + curNode.exits.length);
-            originDebug('> ' + curNode.exits[curNode.choice]);
-            app.stdin.write(curNode.exits[curNode.choice] + '\n');
+
+        if (curInput && curInput.length && curInputPos < curInput.length) {
+            curNode.exitIndex = curInput[curInputPos];
+            if (!_.isUndefined(curNode.tos[curNode.exitIndex])) {
+                throw new GameError(app, 'abort, the path has been selected');
+            }
         } else {
-            throw new Error('the choice exceeds exits length:\n' + JSON.stringify(curNode, null, 4));
+            var hasFound = false;
+            _.each(curNode.exits, function(val, i) {
+                if (!_.isUndefined(curNode.tos[i])) return;
+                if (!hasFound) {
+                    hasFound = true;
+                    curNode.exitIndex = i;
+                } else {
+                    if (curInput) {
+                        curInput.push(i);
+                    } else {
+                        curInput = [i];
+                    }
+                    pathDebug('new: ' + curInput);
+                    inputList.push(_.clone(curInput));
+                }
+            });
+            if (!hasFound) {
+                throw new GameError(app, 'abort, no un-selected exit exists');
+            }
         }
-        curNode.choice = curNode.choice + 1;
+        curInputPos++;
+        nodeDebug('choice: ' + (curNode.exitIndex + 1) + '/' + curNode.exits.length);
+
+        var choice = curNode.exits[curNode.exitIndex];
+        originDebug('> ' + choice);
+        app.stdin.write(choice + '\n');
     }
+}
+
+function GameError(app, msg) {
+    this.app = app;
+    this.message = msg;
 }
