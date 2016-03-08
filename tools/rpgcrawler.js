@@ -49,6 +49,7 @@ process.on('uncaughtException', function(err) {
     err.app.kill();
 
     if (inputList.length) {
+        curNode = null;
         curInput = inputList.shift();
         curInputPos = 0;
         startGame();
@@ -134,14 +135,15 @@ function dispatchLine(app, line) {
                 if (!hasFound) {
                     hasFound = true;
                     curNode.exitIndex = i;
+
+                    curInput = curInput || [];
+                    curInput.push(i);
                 } else {
-                    if (curInput) {
-                        curInput.push(i);
-                    } else {
-                        curInput = [i];
-                    }
-                    pathDebug('new: ' + curInput);
-                    inputList.push(_.clone(curInput));
+                    var newInput = curInput ? _.clone(curInput) : [];
+                    newInput.push(i);
+
+                    pathDebug('new: ' + newInput);
+                    inputList.push(newInput);
                 }
             });
             if (!hasFound) {
