@@ -54,6 +54,15 @@ process.on('uncaughtException', function(err) {
         curInput = inputList.shift();
         curInputPos = 0;
         startGame();
+    } else {
+        _.each(nodeMap, function(node, message) {
+            var data = {
+                title: node.title,
+                message: node.message,
+                children: node.tos
+            };
+            console.log('%d: %s,', node.id, JSON.stringify(data));
+        });
     }
 });
 
