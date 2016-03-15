@@ -90,9 +90,21 @@ function startGame() {
         });
 
         timer = setTimeout(function() {
+            updatePath(app, curNode, -1);
             throw new GameError(app, 'abort', 'you may died');
         }, 2000);
     });
+}
+
+function updatePath(app, node, tid) {
+    if (!node) return;
+
+    if (_.isUndefined(node.tos[node.exitIndex])) {
+        pathDebug('found: %d[%d] = %d', node.id, node.exitIndex, tid);
+        node.tos[node.exitIndex] = tid;
+    } else if (node.tos[node.exitIndex] != tid) {
+        throw new GameError(app, 'error', 'path conflict');
+    }
 }
 
 function dispatchLine(app, line) {
@@ -112,13 +124,7 @@ function dispatchLine(app, line) {
         }
         nodeDebug('at: ' + curNode.id);
 
-        if (!prevNode) return;
-        if (_.isUndefined(prevNode.tos[prevNode.exitIndex])) {
-            pathDebug('found: %d[%d] = %d', prevNode.id, prevNode.exitIndex, curNode.id);
-            prevNode.tos[prevNode.exitIndex] = curNode.id;
-        } else if (prevNode.tos[prevNode.exitIndex] != curNode.id) {
-            throw new GameError(app, 'error', 'path conflict');
-        }
+        updatePath(app, prevNode, curNode.id);
     } else if (matches = rTitle.exec(line)) {
         lineDebug('title');
         isMessage = true;
