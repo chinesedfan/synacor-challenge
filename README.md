@@ -13,12 +13,13 @@ node index.js bin/challenge.bin
 
 ### Progress
 
-Codes collected(4/8):
+Codes collected(5/8):
 
 - `UpiNqTKzQPcV`, at the beginning of this challenge
 - `tZBeiefrPsUM`, once the CPU is runnable and can output something
 - `xIkuFtHWGgvj`, after the self-test is passed
 - `quDrLIIsFhRO`, by `use tablet`, and the whole input is `/bin/input_code_4.txt`
+- `rJBYiKxjfqAI`, at node 21 and `go north`
 - ... ...(TODO)
 
 ### Tips
