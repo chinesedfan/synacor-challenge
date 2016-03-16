@@ -57,9 +57,9 @@ process.on('uncaughtException', function(err) {
     } else {
         _.each(nodeMap, function(node, message) {
             var data = {
+                children: node.tos,
                 title: node.title,
-                message: node.message,
-                children: node.tos
+                message: node.message
             };
             console.log('%d: %s,', node.id, JSON.stringify(data));
         });
