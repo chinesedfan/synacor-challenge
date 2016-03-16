@@ -111,8 +111,12 @@ function updatePath(app, node, tid) {
 
 function dispatchLine(app, line) {
     var matches;
-
     originDebug(line);
+
+    if (line == "I don't understand; try 'help' for instructions.") {
+        throw new GameError(app, 'error', 'wrong input: ' + curInput);
+    }
+
     if (isMessage) {
         lineDebug('message');
         isMessage = false;
