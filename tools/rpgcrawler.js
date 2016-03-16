@@ -165,9 +165,6 @@ function dispatchLine(app, line) {
                 if (!hasFound) {
                     hasFound = true;
                     curNode.exitIndex = i;
-
-                    curInput = curInput || [];
-                    curInput.push(i);
                 } else {
                     var newInput = curInput ? _.clone(curInput) : [];
                     newInput.push(i);
@@ -176,9 +173,12 @@ function dispatchLine(app, line) {
                     inputList.push(newInput);
                 }
             });
+
             if (!hasFound) {
                 throw new GameError(app, 'abort', 'no un-selected exit exists');
             }
+            curInput = curInput || [];
+            curInput.push(curNode.exitIndex);
         }
         curInputPos++;
         nodeDebug('choice: %d/%d', (curNode.exitIndex + 1), curNode.exits.length);
