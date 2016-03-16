@@ -76,6 +76,7 @@ function startGame() {
 
     app.stdout.on('data', function(data) {
         clearTimeout(timer);
+        if (app.killed) return;
 
         var start = 0;
         _.each(data, function(byte, i) {
