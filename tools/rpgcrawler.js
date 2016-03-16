@@ -58,6 +58,7 @@ process.on('uncaughtException', function(err) {
         _.each(nodeMap, function(node, message) {
             var data = {
                 children: node.tos,
+                exits: node.exits,
                 title: node.title,
                 message: node.message
             };
