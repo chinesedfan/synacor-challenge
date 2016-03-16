@@ -14,16 +14,19 @@ var pathDebug = debug('path');
 var originDebug = debug('origin');
 
 var rTitle = /^== (.+) ==$/;
+var rThingTitle = /^Things of interest here:$/;
 var rExitTitle = /^There are (\d+) exits:|There is (1) exit:$/;
-var rExitItem = /^- (.+)$/;
+var rItem = /^- (.+)$/;
 var rInput = /^What do you do\?$/;
 var isMessage = false; // the next line is message
+var isThingList = false; // the thing list begins
 var isExitList = false; // the exit list begins
 
 /**
  * For each node, it stands for a status of the game.
  * - title, indicates where you are
  * - message, the main detail information
+ * - things, the array of interest thing
  * - exits, the array of possible choices
  *
  * - id, the unique id, starts from 0
@@ -59,6 +62,7 @@ process.on('uncaughtException', function(err) {
             var data = {
                 children: node.tos,
                 exits: node.exits,
+                things: node.things,
                 title: node.title,
                 message: node.message
             };
@@ -141,18 +145,27 @@ function dispatchLine(app, line) {
         curNode.isDone = false;
         curNode.tos = [];
         curNode.choice = 0;
+    } else if (matches = rThingTitle.exec(line)) {
+        lineDebug('thing title');
+        isThingList = true;
+        if (curNode.isDone) return;
+        curNode.things = [];
     } else if (matches = rExitTitle.exec(line)) {
         lineDebug('exit title');
         isExitList = true;
         if (curNode.isDone) return;
         curNode.exits = [];
-    } else if (matches = rExitItem.exec(line)) {
-        if (!isExitList) return;
-        lineDebug('exit item');
-        if (curNode.isDone) return;
-        curNode.exits.push(matches[1]);
+    } else if (matches = rItem.exec(line)) {
+        if (isExitList) {
+            lineDebug('exit item');
+            !curNode.isDone && curNode.exits.push(matches[1]);
+        } else if (isThingList) {
+            lineDebug('thing item');
+            !curNode.isDone && curNode.things.push(matches[1]);
+        }
     } else if (matches = rInput.exec(line)) {
         lineDebug('input');
+        isThingList = false;
         isExitList = false;
         curNode.isDone = true;
 
