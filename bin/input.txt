@@ -45,3 +45,5 @@ use shiny coin
 use concave coin
 use corroded coin
 north
+take teleporter
+use teleporter
