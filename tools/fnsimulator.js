@@ -1,11 +1,18 @@
+var path = require('path');
 var debug = require('debug');
 var callDebug = debug('call');
 var retDebug = debug('ret');
 
-var r0 = 4, r1 = 1, r7 = 0;
+var args = process.argv.slice(2);
+if (args.length < 3) {
+    console.log('Useage: node ' + path.basename(__filename) + ' <r0> <r1> <r7>');
+    return;
+}
+var r0 = parseInt(args[0]), r1 = parseInt(args[1]), r7 = parseInt(args[2]);
 var stack = [];
 var cache = [];
 
+console.log('call with: %d %d %d...', r0, r1, r7);
 call6027();
 console.log('...done with:', r0, r1, r7);
 
