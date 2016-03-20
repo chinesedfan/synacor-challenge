@@ -11,7 +11,7 @@ function init() {
 }
 
 function f41(r7) {
-    return f3(f3(r7, r7));
+    return f3(f3(r7, r7), r7);
 }
 function f3(b, r7) {
     var d = Math.pow(r7 + 1, b);
