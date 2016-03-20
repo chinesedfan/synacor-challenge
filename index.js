@@ -5,7 +5,7 @@ var solve = require('./lib');
 var args = process.argv.slice(2);
 
 if (args.length < 1) {
-	console.log('Useage: node ' + path.basename(__filename) + ' <bin_file> [input_file]');
+	console.log('Usage: node ' + path.basename(__filename) + ' <bin_file> [input_file]');
 	return;
 }
 
