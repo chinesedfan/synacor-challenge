@@ -15,7 +15,8 @@ function f41(r7) {
 }
 function f3(b, r7) {
     var d = Math.pow(r7 + 1, b);
-    return d * ((r7 + 1) * (r7 + 1) + r7) + (d - 1) / r7 * (2 * r7 + 1);
+    var ret = d * ((r7 + 1) * (r7 + 1) + r7) + (d - 1) / r7 * (2 * r7 + 1);
+    return ret & 0x7fff;
 }
 
 module.exports = {

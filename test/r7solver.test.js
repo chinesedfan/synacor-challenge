@@ -14,6 +14,9 @@ describe('f3', function() {
         it('then f(3, 1) = 13', function() {
             assert.equal(solver.f3(1, r7), 13);
         });
+        it('then f(3, 13) = 32765', function() {
+            assert.equal(solver.f3(13, r7), 32765);
+        });
     });
     describe('if r7 = 2', function() {
         beforeEach(function() {
@@ -31,5 +34,10 @@ describe('f3', function() {
         it('then f(3, 5) = 3278', function() {
             assert.equal(solver.f3(5, r7), 3278);
         });
+    });
+});
+describe('f41', function() {
+    it('if r7 = 1 then f(4, 1) = 32765', function() {
+        assert.equal(solver.f41(1), 32765);
     });
 });
