@@ -265,3 +265,44 @@
 2144:   pop r2
 2146:   pop r1
 2148:   ret 
+
+5451:   jf r7, 5605 // hack then not jump
+5454:   push r0
+5456:   push r1
+5458:   push r2
+5460:   set r0, 28844
+5463:   set r1, 1531
+5466:   add r2, 4374, 4182
+5470:   call 1458
+5472:   pop r2
+5474:   pop r1
+5476:   pop r0
+5478:   noop 
+5479:   noop 
+5480:   noop 
+5481:   noop 
+5482:   noop 
+5483:   set r0, 4
+5486:   set r1, 1
+5489:   call 6027 // f(4, 1)
+5491:   eq r1, r0, 6
+5495:   jf r1, 5579 // hack then not jump
+
+// magic function
+6027:   jt r0, 6035
+6030:   add r0, r1, 1
+6034:   ret 
+6035:   jt r1, 6048 // no r1 then jump
+6038:   add r0, r0, 32767
+6042:   set r1, r7 // key point!!!
+6045:   call 6027
+6047:   ret 
+
+6048:   push r0
+6050:   add r1, r1, 32767
+6054:   call 6027 // r1-- and recall
+6056:   set r1, r0
+6059:   pop r0
+6061:   add r0, r0, 32767
+6065:   call 6027 // recall
+6067:   ret 
