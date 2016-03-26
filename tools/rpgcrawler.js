@@ -3,11 +3,13 @@ var _ = require('lodash');
 
 /**
  * Debug options:
+ * - game, called when the game restarts
  * - line, output the line type, like `title`/`message` and so on
  * - node, output the state and the choice
  * - origin, the origin message
  */
 var debug = require('debug');
+var gameDebug = debug('game');
 var lineDebug = debug('line');
 var nodeDebug = debug('node');
 var pathDebug = debug('path');
@@ -87,6 +89,7 @@ function startGame() {
     var timer;
 
     app = spawn('node', ['../index.js', '../bin/challenge.bin'], {
+    gameDebug('input list length:', inputList.length);
         env: _.extend({}, process.env, {
             DEBUG: 'node',
             DEBUG_FD: 1
