@@ -1,4 +1,5 @@
 var spawn = require('child_process').spawn;
+var util = require('util');
 var _ = require('lodash');
 
 /**
@@ -122,12 +123,14 @@ function startGame() {
 
 function updatePath(node, tid) {
     if (!node) return;
+    if (_.isUndefined(node.exitIndex)) return;
 
     if (_.isUndefined(node.tos[node.exitIndex])) {
         pathDebug('found: %d[%d] = %d', node.id, node.exitIndex, tid);
         node.tos[node.exitIndex] = tid;
     } else if (node.tos[node.exitIndex] != tid) {
-        throw new GameError('error', 'path conflict');
+        throw new GameError('error',
+            util.format('path conflict: %d[%d] = %d but found %d', node.id, node.exitIndex, node.tos[node.exitIndex], tid));
     }
 }
 
