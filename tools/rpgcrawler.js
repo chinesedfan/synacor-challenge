@@ -48,11 +48,19 @@ var inputList = [];
 var curInput;
 var curInputPos = 0;
 
+var app;
+
 startGame();
 process.on('uncaughtException', function(err) {
-    pathDebug('%s: %s', err.type, err.message);
-    err.app.kill();
-    if (err.type === 'error') return;
+    if (err instanceof GameError) {
+        pathDebug('%s: %s', err.type, err.message);
+        app.kill();
+        
+        if (err.type == 'error') return;
+    } else {
+        console.log(err.stack);
+        return;
+    }
 
     if (inputList.length) {
         curNode = null;
@@ -76,15 +84,15 @@ process.on('uncaughtException', function(err) {
 
 function startGame() {
     var bufferList = [];
-    var app = spawn('node', ['../index.js', '../bin/challenge.bin'], {
+    var timer;
+
+    app = spawn('node', ['../index.js', '../bin/challenge.bin'], {
         env: _.extend({}, process.env, {
             DEBUG: 'node',
             DEBUG_FD: 1
         }),
         cwd: __dirname
     });
-    var timer;
-
     app.stdout.on('data', function(data) {
         clearTimeout(timer);
         if (app.killed) return;
@@ -93,7 +101,7 @@ function startGame() {
         _.each(data, function(byte, i) {
             if (byte == 10) {
                 bufferList.push(data.slice(start, i));
-                dispatchLine(app, Buffer.concat(bufferList).toString());
+                dispatchLine(Buffer.concat(bufferList).toString());
 
                 bufferList = [];
                 start = i + 1;
@@ -103,29 +111,29 @@ function startGame() {
         });
 
         timer = setTimeout(function() {
-            updatePath(app, curNode, -1);
-            throw new GameError(app, 'abort', 'you may died');
+            updatePath(curNode, -1);
+            throw new GameError('abort', 'you may died');
         }, 2000);
     });
 }
 
-function updatePath(app, node, tid) {
+function updatePath(node, tid) {
     if (!node) return;
 
     if (_.isUndefined(node.tos[node.exitIndex])) {
         pathDebug('found: %d[%d] = %d', node.id, node.exitIndex, tid);
         node.tos[node.exitIndex] = tid;
     } else if (node.tos[node.exitIndex] != tid) {
-        throw new GameError(app, 'error', 'path conflict');
+        throw new GameError('error', 'path conflict');
     }
 }
 
-function dispatchLine(app, line) {
+function dispatchLine(line) {
     var matches;
     originDebug(line);
 
     if (line == "I don't understand; try 'help' for instructions.") {
-        throw new GameError(app, 'error', 'wrong input: ' + curInput);
+        throw new GameError('error', 'wrong input: ' + curInput);
     }
 
     if (isMessage) {
@@ -151,7 +159,7 @@ function dispatchLine(app, line) {
         }
         nodeDebug('at: ' + curNode.id);
 
-        updatePath(app, prevNode, curNode.id);
+        updatePath(prevNode, curNode.id);
     } else if (matches = rTitle.exec(line)) {
         lineDebug('title');
         isMessage = true;
@@ -200,7 +208,7 @@ function dispatchLine(app, line) {
             });
 
             if (!hasFound) {
-                throw new GameError(app, 'abort', 'no un-selected exit exists');
+                throw new GameError('abort', 'no un-selected exit exists');
             }
             curInput = curInput || [];
             curInput.push(curNode.exitIndex);
@@ -214,8 +222,7 @@ function dispatchLine(app, line) {
     }
 }
 
-function GameError(app, type, msg) {
-    this.app = app;
+function GameError(type, msg) {
     this.type = type;
     this.message = msg;
 }
