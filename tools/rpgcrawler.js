@@ -13,6 +13,7 @@ var nodeDebug = debug('node');
 var pathDebug = debug('path');
 var originDebug = debug('origin');
 
+var rNodeTitle = /node\.id=(\S+)/;
 var rTitle = /^== (.+) ==$/;
 var rThingTitle = /^Things of interest here:$/;
 var rExitTitle = /^There are (\d+) exits:|There is (1) exit:$/;
@@ -30,6 +31,7 @@ var isExitList = false; // the exit list begins
  * - exits, the array of possible choices
  *
  * - id, the unique id, starts from 0
+ * - internalId, consists of a special memory value and registers
  * - isDone, whether all information has been collected
  * - tos, the array of node id corresponding to `exits`
  * - exitIndex, which choice has just been selected, default is 0
@@ -64,6 +66,7 @@ process.on('uncaughtException', function(err) {
                 exits: node.exits,
                 things: node.things,
                 title: node.title,
+                internalId: node.internalId,
                 message: node.message
             };
             console.log('%d: %s,', node.id, JSON.stringify(data));
@@ -74,6 +77,10 @@ process.on('uncaughtException', function(err) {
 function startGame() {
     var bufferList = [];
     var app = spawn('node', ['../index.js', '../bin/challenge.bin'], {
+        env: _.extend({}, process.env, {
+            DEBUG: 'node',
+            DEBUG_FD: 1
+        }),
         cwd: __dirname
     });
     var timer;
@@ -125,12 +132,22 @@ function dispatchLine(app, line) {
         lineDebug('message');
         isMessage = false;
 
-        if (nodeMap[line]) {
-            curNode = nodeMap[line];
+        curNode.message = line;
+    } else if (matches = rNodeTitle.exec(line)) {
+        lineDebug('node title');
+
+        prevNode = curNode;
+        if (nodeMap[matches[1]]) {
+            curNode = nodeMap[matches[1]];
         } else {
-            nodeMap[line] = curNode;
-            curNode.id = nodeCount++;
-            curNode.message = line;
+            curNode = {
+                id: nodeCount++,
+                internalId: matches[1],
+                isDone: false,
+                tos: [],
+                choice: 0
+            };
+            nodeMap[matches[1]] = curNode;
         }
         nodeDebug('at: ' + curNode.id);
 
@@ -139,12 +156,7 @@ function dispatchLine(app, line) {
         lineDebug('title');
         isMessage = true;
 
-        prevNode = curNode;
-        curNode = {};
         curNode.title = matches[1];
-        curNode.isDone = false;
-        curNode.tos = [];
-        curNode.choice = 0;
     } else if (matches = rThingTitle.exec(line)) {
         lineDebug('thing title');
         isThingList = true;
