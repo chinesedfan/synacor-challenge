@@ -13,7 +13,7 @@ node index.js bin/challenge.bin
 
 ### Progress
 
-Codes collected(7/8):
+Codes collected(8/8):
 
 - `UpiNqTKzQPcV`, at the beginning of this challenge
 - `tZBeiefrPsUM`, once the CPU is runnable and can output something
@@ -22,7 +22,7 @@ Codes collected(7/8):
 - `rJBYiKxjfqAI`, at node 21 and `go north`
 - `iupNpossLXvK`, by `use teleporter`
 - `FmMGDBPACIhj`, by hack r7 correctly
-- ... ...(TODO)
+- `wxvWuMqqAlbb`, the mirror of `ddlAppMuWvxw`
 
 ### Tips
 
