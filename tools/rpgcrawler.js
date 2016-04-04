@@ -50,6 +50,7 @@ var prevNode;
 var inputList = [];
 var curInput;
 var curInputPos = 0;
+var preInputCount;
 
 var app;
 
@@ -89,8 +90,9 @@ function startGame() {
     var bufferList = [];
     var timer;
 
-    app = spawn('node', ['../index.js', '../bin/challenge.bin'], {
+    preInputCount = 49;
     gameDebug('input list length:', inputList.length);
+    app = spawn('node', ['../index.js', '../bin/challenge.bin', '../bin/input.txt'], {
         env: _.extend({}, process.env, {
             DEBUG: 'node',
             DEBUG_FD: 1
@@ -140,14 +142,11 @@ function dispatchLine(line) {
 
     if (line == "I don't understand; try 'help' for instructions.") {
         throw new GameError('error', 'wrong input: ' + curInput);
+    } else if (line == 'The vault door is sealed.') {
+        throw new GameError('abort', 'the vault door is sealed');
     }
 
-    if (isMessage) {
-        lineDebug('message');
-        isMessage = false;
-
-        curNode.message = line;
-    } else if (matches = rNodeTitle.exec(line)) {
+    if (matches = rNodeTitle.exec(line)) {
         lineDebug('node title');
 
         prevNode = curNode;
@@ -155,11 +154,11 @@ function dispatchLine(line) {
             curNode = nodeMap[matches[1]];
         } else {
             curNode = {
+                message: '',
                 id: nodeCount++,
                 internalId: matches[1],
                 isDone: false,
-                tos: [],
-                choice: 0
+                tos: []
             };
             nodeMap[matches[1]] = curNode;
         }
@@ -173,14 +172,21 @@ function dispatchLine(line) {
         curNode.title = matches[1];
     } else if (matches = rThingTitle.exec(line)) {
         lineDebug('thing title');
+        isMessage = false;
         isThingList = true;
         if (curNode.isDone) return;
         curNode.things = [];
     } else if (matches = rExitTitle.exec(line)) {
         lineDebug('exit title');
+        isMessage = false;
         isExitList = true;
         if (curNode.isDone) return;
         curNode.exits = [];
+    } else if (isMessage) {
+        lineDebug('message');
+
+        if (curNode.isDone) return;
+        curNode.message += '\n' + line;
     } else if (matches = rItem.exec(line)) {
         if (isExitList) {
             lineDebug('exit item');
@@ -194,6 +200,7 @@ function dispatchLine(line) {
         isThingList = false;
         isExitList = false;
         curNode.isDone = true;
+        if (preInputCount-- > 0) return;
 
         if (curInput && curInput.length && curInputPos < curInput.length) {
             curNode.exitIndex = curInput[curInputPos];
