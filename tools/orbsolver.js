@@ -53,7 +53,12 @@ function bfs(root) {
                 value: updateValue(node, child)
             };
             if (isEnd(data[id])) {
-                if (cnode.value == 30) console.log(JSON.stringify(cnode));
+                // finally, found the path
+                if (cnode.value == 30) {
+                    // {"id":49,"prefixes":["43",44,73,69,55,71,67,69,72,69,55,54],"symbols":[22,"+",4,"-",11,"*",4,"-",18,"-",11,"-",1],"value":30}
+                    console.log(JSON.stringify(cnode));
+                    printExits(cnode.prefixes.concat([cnode.id]));
+                }
             } else {
                 q.push(cnode); 
             }
@@ -74,4 +79,15 @@ function updateValue(node, child) {
     default:
         throw new Error('unknown operator');
     }
+}
+function printExits(ids) {
+    var pre, cur, index;
+    _.each(ids, function(id) {
+        cur = data[id];
+        if (pre) {
+            index = pre.children.indexOf(id);
+            console.log(pre.exits[index]);
+        }
+        pre = cur;
+    });
 }
